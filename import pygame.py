@@ -1,3 +1,4 @@
+#!C:/Users/David/chess/bin/python
 import pygame
 import time
 import sys
