@@ -1,3 +1,4 @@
+#!C:\Users\David\chess\env\Scripts python
 import pygame
 import sys
 
