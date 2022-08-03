@@ -1,4 +1,4 @@
 {
   "TestFramework": "Pytest",
-  "Interpreter": "Workspace|Workspace|chess"
+  "Interpreter": "Workspace|Workspace|env"
 }
