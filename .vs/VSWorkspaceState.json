@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\Lib",
-    "\\Lib\\site-packages"
+    "\\chess-pieces",
+    "\\Include",
+    "\\Lib"
   ],
   "SelectedNode": "\\chess.py",
   "PreviewInSolutionExplorer": false
