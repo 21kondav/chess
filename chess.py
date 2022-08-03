@@ -1,4 +1,3 @@
-
 import pygame
 import sys
 
@@ -18,23 +17,23 @@ class Piece:
 
 #Creates instances of chess pieces
 #Pawn
-bp = Piece('b', 'p', 'b_pawn.png')
-wp = Piece('w', 'p','w_pawn.png')
+bp = Piece('b', 'p', 'chess-pieces\\bp.png')
+wp = Piece('w', 'p','chess-pieces\\wp.png')
 #king
-bk = Piece('b', 'k', 'b_king.png')
-wk = Piece('w', 'k', 'w_king.png')
+bk = Piece('b', 'k', 'chess-pieces\\bk.png')
+wk = Piece('w', 'k', 'chess-pieces\\wk.png')
 #rook
-br = Piece('b','r', 'b_rook.png')
-wr = Piece('w','r', 'w_rook.png')
+br = Piece('b','r', 'chess-pieces\\br.png')
+wr = Piece('w','r', 'chess-pieces\\wr.png')
 #bishop
-bb = Piece('b','b', 'b_bishop.png')
-wb = Piece('w','b', 'w_bishop.png')
+bb = Piece('b','b', 'chess-pieces\\bb.png')
+wb = Piece('w','b', 'chess-pieces\\wb.png')
 #queen
-bq = Piece('b','q', 'b_queen.png')
-wq = Piece('w','q', 'w_queen.png')
+bq = Piece('b','q', 'chess-pieces\\bq.png')
+wq = Piece('w','q', 'chess-pieces\\wq.png')
 #knight
-bkn = Piece('b','kn', 'b_knight.png')
-wkn = Piece('w','kn', 'w_knight.png')
+bkn = Piece('b','kn', 'chess-pieces\\bkn.png')
+wkn = Piece('w','kn', 'chess-pieces\\wkn.png')
 #sets the starting order
 pieces = [br, bkn, bp, wp, bk, wk, bb, bq, wq, wb, wkn, wr]
 start = {}
@@ -67,7 +66,7 @@ for i in pieces:
         else:
             start[(3,0)] = pygame.image.load(bk.image)
     #white side
-    if(i.team == 'w'):
+    if i.team == 'w':
         #pawn positions 
         if i.type == 'p':
             for i in range(0,8):
