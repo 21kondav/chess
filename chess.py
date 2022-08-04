@@ -39,7 +39,7 @@ wkn = Piece('w','kn', 'wkn.png')
 #sets the starting order
 pieces = [br, bkn, bp, wp, bk, wk, bb, bq, wq, wb, wkn, wr]
 start = {}
-# TODO: revise for efficency
+#TODO: revise for efficency
 def upload(pic):
     return os.path.join('chess-pieces', pic)
 for x in range(0, 8):
@@ -289,10 +289,10 @@ class Node:
 
     def setup(self, win):
         if start[(self.row, self.col)]:
-            if start[(self.row, self.col)]:
+            if start[(self.row, self.col)] == None:
                 pass
-        else:
-            win.blit(start[(self.row, self.col)], (self.x, self.y))
+            else:
+                win.blit(start[(self.row, self.col)], (self.x, self.y))
 def make_grid(rows, width):
     grid = []
     gap = width//rows
