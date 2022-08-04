@@ -1,7 +1,8 @@
-#!C:\Users\David\chess\env\Scripts python
+
+#! C:\Users\David\chess\env\Scripts\python
 import pygame
 import sys
-
+import os
 from pygame import image
 
 board = [[' ' for i in range(8)] for i in range(8)]
@@ -18,85 +19,90 @@ class Piece:
 
 #Creates instances of chess pieces
 #Pawn
-bp = Piece('b', 'p', 'chess-pieces\\bp.png')
-wp = Piece('w', 'p','chess-pieces\\wp.png')
+bp = Piece('b', 'p', 'bp.png')
+wp = Piece('w', 'p','wp.png')
 #king
-bk = Piece('b', 'k', 'chess-pieces\\bk.png')
-wk = Piece('w', 'k', 'chess-pieces\\wk.png')
+bk = Piece('b', 'k', 'bk.png')
+wk = Piece('w', 'k', 'wk.png')
 #rook
-br = Piece('b','r', 'chess-pieces\\br.png')
-wr = Piece('w','r', 'chess-pieces\\wr.png')
+br = Piece('b','r', 'br.png')
+wr = Piece('w','r', 'wr.png')
 #bishop
-bb = Piece('b','b', 'chess-pieces\\bb.png')
-wb = Piece('w','b', 'chess-pieces\\wb.png')
+bb = Piece('b','b', 'bb.png')
+wb = Piece('w','b', 'wb.png')
 #queen
-bq = Piece('b','q', 'chess-pieces\\bq.png')
-wq = Piece('w','q', 'chess-pieces\\wq.png')
+bq = Piece('b','q', 'bq.png')
+wq = Piece('w','q', 'wq.png')
 #knight
-bkn = Piece('b','kn', 'chess-pieces\\bkn.png')
-wkn = Piece('w','kn', 'chess-pieces\\wkn.png')
+bkn = Piece('b','kn', 'bkn.png')
+wkn = Piece('w','kn', 'wkn.png')
 #sets the starting order
 pieces = [br, bkn, bp, wp, bk, wk, bb, bq, wq, wb, wkn, wr]
 start = {}
 # TODO: revise for efficency
+def upload(pic):
+    return os.path.join('chess-pieces', pic)
+for x in range(0, 8):
+    for y in range(1, 6):
+        start[(x, y)] = None
 for i in pieces:
     #black side
     if i.team == 'b':
         if(i.type == 'p' ):
-            for i in range(0,8):
-                start[(1, i)] = pygame.image.load(bp.image)
+            for n in range(0,8):
+                start[(n, 1)] = pygame.image.load(upload(bp.image))
 
         #postions rook
         elif i.type == 'r':
-            start[(1,0)] = pygame.image.load(br.image)
-            start[(7,0)] = pygame.image.load(br.image)
+            start[(0,0)] = pygame.image.load(upload(br.image))
+            start[(7,0)] = pygame.image.load(upload(br.image))
 
         #postions for bishop
         elif i.type == 'b':
-            start[(2,0)] = pygame.image.load(br.image)
-            start[(5,0)] = pygame.image.load(br.image)
+            start[(2,0)] = pygame.image.load(upload(bb.image))
+            start[(5,0)] = pygame.image.load(upload(br.image))
 
         #positions for knight
         elif i.type == 'kn':
-            start[(1,0)] = pygame.image.load(bkn.image)
-            start[(6,0)] = pygame.image.load(bkn.image)
+            start[(1,0)] = pygame.image.load(upload(bkn.image))
+            start[(6,0)] = pygame.image.load(upload(bkn.image))
         #queen position
         elif i.type == 'q':
-            start[(4,0)] = pygame.image.load(bq.image)
+            start[(4,0)] = pygame.image.load(upload(bq.image))
         #king position
         else:
-            start[(3,0)] = pygame.image.load(bk.image)
+            start[(3,0)] = pygame.image.load(upload(bk.image))
     #white side
-    if i.team == 'w':
+    elif i.team == 'w':
         #pawn positions 
         if i.type == 'p':
-            for i in range(0,8):
-                start[(i, 6)] = pygame.image.load(wp.image)
+            for n in range(0,8):
+                start[(n, 6)] = pygame.image.load(upload(wp.image))
         #bishop positions
         elif i.type == 'b':
-            start[(2, 7)] = pygame.image.load(wb.image)
-            start[(5,7)] = pygame.image.load(wb.image)
+            start[(2, 7)] = pygame.image.load(upload(wb.image))
+            start[(5,7)] = pygame.image.load(upload(wb.image))
         #rook positions
         elif i.type == 'r':
-            start[(0,7)] = pygame.image.load(wr.image)
-            start[(7,7)] = pygame.image.load(wr.image)
+            start[(0,7)] = pygame.image.load(upload(wr.image))
+            start[(7,7)] = pygame.image.load(upload(wr.image))
         #positions for knight
         elif i.type == 'kn':
-            start[(1,7)] = pygame.image.load(wkn.image)
-            start[(4,7)] = pygame.image.load(wkn.image)
+            start[(1,7)] = pygame.image.load(upload(wkn.image))
+            start[(4,7)] = pygame.image.load(upload(wkn.image))
         #queen position
         elif i.type == 'q':
-            start[(6,7)] = pygame.image.load(wq.image)
+            start[(6,7)] = pygame.image.load(upload(wq.image))
         #king position
         else:
-            start[(3,7)] = pygame.image.load(wk.image)
+            start[(3,7)] = pygame.image.load(upload(wk.image))
 #creates board
 def createBoard(board):
     board[0] = [br, bkn, bb, bq, bk, bb, bkn, br]
     board[7] = [br, bkn, bb, bk, bq, bb, bkn, br]
     for i in range(8):
         board[1][i] = bp
-        board[6,i] = wp
+        board[6][i] = wp
     return 
 
 def on_board(position):
@@ -275,19 +281,21 @@ class Node:
         self.col = col
         self.x = int(row * width)
         self.y = int(col * width)
+        self.color = white
         self.occupied = None 
 
     def draw(self, win):
-        pygame.draw.rect(win, self.colour, (self.x, self.y, width / 8, width / 8))
+        pygame.draw.rect(win, self.color, (self.x, self.y, width / 8, width / 8))
 
     def setup(self, win):
-        if start[(self.row, self.col)] == None:
-            pass
+        if start[(self.row, self.col)]:
+            if start[(self.row, self.col)]:
+                pass
         else:
             win.blit(start[(self.row, self.col)], (self.x, self.y))
 def make_grid(rows, width):
     grid = []
-    gap = width // rows
+    gap = width//rows
     print(gap)
     for i in range(rows):
         grid.append([])
@@ -295,7 +303,8 @@ def make_grid(rows, width):
             node = Node(j, i, gap)
             grid[i].append(node)
             if (i + j)%2 == 1:
-                grid[i][j].colour = grey
+                grid[i][j].color = grey
+    return grid
 def drawGrid(win, rows, width):
     gap = width // 8
     for i in range(rows):
@@ -314,7 +323,7 @@ def updateDisplay(win, grid, rows, width):
 def findNode(pos, width):
     interval = width / 8
     y, x = pos 
-    rows = y
+    rows = y // interval // interval
     columns = x
     return int(rows), int(columns)
 def potentialMv(positions, grid):
@@ -330,19 +339,19 @@ def removeHightlight(grid):
     for i in range(len(grid[0])):
         for j in range(len(grid[0])):
             if (i+j)%2 == 0:
-                grid[i][j].colour = white
+                grid[i][j].color = white
             else:
-                grid[i][j].colour = grey
+                grid[i][j].color = grey
     return grid
-
+createBoard(board )
 def main(win, width):
     moves = 0
     selected = False
     pieceToMove = []
-    grid = make_grid(width)
+    grid = make_grid(8, width)
     while True:
         pygame.time.delay(50)
-        for event in pygame.event.get:
+        for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
@@ -354,7 +363,7 @@ def main(win, width):
                         possible = select_moves((board[x][y]), (x, y), moves)
                         for positions in possible:
                             row, col = positions
-                            grid[row][col].colour = blue
+                            grid[row][col].colorr = blue
                         pieceToMv = x, y
                         selected = True
                     except:
