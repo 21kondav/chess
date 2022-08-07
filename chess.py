@@ -1,22 +1,22 @@
 
 #! C:\Users\David\chess\env\Scripts\python
+from urllib.parse import non_hierarchical
 import pygame
 import sys
 import os
-from pygame import image
-
-board = [[' ' for i in range(8)] for i in range(8)]
+board = [['  ' for i in range(8)] for i in range(8)]
 
 #Chess piece class which defines type of piece, what side its on, and if
 #it has captured yet
-
+width = 800
+nodeSize = (width/8, width / 8)
 class Piece:
     def __init__(self, team, type, image, killable=False):
         self.team = team
         self.type = type
         self.image = image
         self.killable = killable
-
+#TODO: Update pictures
 #Creates instances of chess pieces
 #Pawn
 bp = Piece('b', 'p', 'bp.png')
@@ -40,10 +40,12 @@ wkn = Piece('w','kn', 'wkn.png')
 pieces = [br, bkn, bp, wp, bk, wk, bb, bq, wq, wb, wkn, wr]
 start = {}
 #TODO: revise for efficency
+#TODO: choose better piece images
+
 def upload(pic):
     return os.path.join('chess-pieces', pic)
 for x in range(0, 8):
-    for y in range(1, 6):
+    for y in range(2, 6):
         start[(x, y)] = None
 for i in pieces:
     #black side
@@ -96,6 +98,10 @@ for i in pieces:
         #king position
         else:
             start[(3,7)] = pygame.image.load(upload(wk.image))
+for a in range(0, 8):
+    for b in range(0, 8):
+        if start[(a, b)] != None:
+            start[(a, b)] = pygame.transform.scale(start[(a, b)], (nodeSize))
 #creates board
 def createBoard(board):
     board[0] = [br, bkn, bb, bq, bk, bb, bkn, br]
@@ -103,10 +109,10 @@ def createBoard(board):
     for i in range(8):
         board[1][i] = bp
         board[6][i] = wp
-    return 
+    return board
 
 def on_board(position):
-    if position[0] > -1 and position[1] > -1 and position[0] < 8 and position[0] < 8:
+    if position[0] > -1 and position[1] > -1 and position[0] < 8 and position[1] < 8:
         return True
 #makes the boad readable
 def convertBoard(board):
@@ -124,7 +130,7 @@ def deselect():
     for row in range(len(board)):
         for column in range(len(board[0])):
             if board[row][column] == 'x ':
-                board[row][column] = ' '
+                board[row][column] = '  '
             else:
                 try:
                     board[row][column].killable = False
@@ -134,7 +140,7 @@ def deselect():
 #gives valid move using the board as the argument
 def highlight(board):
     highlighted = []
-    for i in range(len(board[0])):
+    for i in range(len(board)):
         for j in range(len(board[0])):
             if board[i][j] == 'x ':
                 highlighted.append((i, j))
@@ -144,69 +150,71 @@ def highlight(board):
                         highlighted.append((i, j))
                 except:
                     pass
-        return highlighted
+    return highlighted
 
 def check_team(moves, index):
     row, col = index
     if moves%2 == 0:
-        if board[row][col] == 'w':
+        if board[row][col].team == 'w':
             return True
     else:
-        if board[row][col] == 'b':
+        if board[row][col].team == 'b':
             return True
 #determines moves based on the piece
+#FIXME - When you select a piece it returns "Can't select" (1/2)
 def select_moves(piece, index, moves):
     pt = piece.type
-    if pt == 'p':
-        if piece.team == 'b':
-            return highlight(bPawnMv(index))
+    if check_team(moves, index):
+        if pt == 'p':
+            if piece.team == 'b':
+                return highlight(bPawnMv(index))
+            else:
+                return highlight(wPawnMv(index))
+        elif pt == 'r':
+            return highlight(rookMv(index))
+        elif pt == 'b':
+            return highlight(bishopMv(index))
+        elif pt =='k':
+            return highlight(kingMv(index))
+        elif pt == 'q':
+            return highlight(queenMv(index))
         else:
-            return highlight(wPawnMv(index))
-    elif pt == 'r':
-        return highlight(rookMv(index))
-    elif pt == 'b':
-        return highlight(bishopMv(index))
-    elif pt =='k':
-        return highlight(kingMv(index))
-    elif pt == 'q':
-        return highlight(queenMv(index))
-    else:
-        return highlight(knightMv(index))
+            return highlight(knightMv(index))
 #defines how pawns move
 def bPawnMv(index):
     if index[0] == 1:
-        if board[index[0] + 2][index[1]] == ' ' and board[index[0] + 1][index[1]] == '  ':
+        if board[index[0] + 2][index[1]] == '  ' and board[index[0] + 1][index[1]] == '  ':
             board[index[0]+ 2][index[1]] = 'x '
-        bottom3 = [[index[0] + 1, index[1] + i] for i in range(-1, 2)]
-        for positions in bottom3:
-            if on_board(positions):
-                if bottom3.index(positions) % 2 == 0:
-                    try:
-                        if board[positions[0]][positions[1]].team != 'b':
-                            board[positions[0]][positions[1]].killable = True
-                    except:
-                        pass
-                else: 
-                    if board[positions[0]][positions[1]].team == '  ':
-                        board[positions[0]][positions[1]] = 'x '
+    bottom3 = [[index[0] + 1, index[1] + i] for i in range(-1, 2)]
+    for positions in bottom3:
+        if on_board(positions):
+            if bottom3.index(positions) % 2 == 0:
+                try:
+                    if board[positions[0]][positions[1]].team != 'b':
+                        board[positions[0]][positions[1]].killable = True
+                except:
+                    pass
+            else: 
+                if board[positions[0]][positions[1]].team == '  ':
+                    board[positions[0]][positions[1]] = 'x '
     return board
 
 def wPawnMv(index):
     if index[0] == 6:
-        if board[index[0] - 2][index[1]] == ' ' and board[index[0] - 1][index[1]] == '  ':
+        if board[index[0] - 2][index[1]] == '  ' and board[index[0] - 1][index[1]] == '  ':
             board[index[0]- 2][index[1]] = 'x '
-        top3 = [[index[0] - 1, index[1] + i] for i in range(-1, 2)]
-        for positions in top3:
-            if on_board(positions):
-                if top3.index(positions) % 2 == 0:
-                    try:
-                        if board[positions[0]][positions[1]].team != 'w':
-                            board[positions[0]][positions[1]].killable = True
-                    except:
-                        pass
-                else: 
-                    if board[positions[0]][positions[1]].team == '  ':
-                        board[positions[0]][positions[1]] = 'x '
+    top3 = [[index[0] - 1, index[1] + i] for i in range(-1, 2)]
+    for positions in top3:
+        if on_board(positions):
+            if top3.index(positions) % 2 == 0:
+                try:
+                    if board[positions[0]][positions[1]].team != 'w':
+                        board[positions[0]][positions[1]].killable = True
+                except:
+                    pass
+            else: 
+                if board[positions[0]][positions[1]].team == '  ':
+                    board[positions[0]][positions[1]] = 'x '
     return board
 
 def kingMv(index):
@@ -217,13 +225,13 @@ def kingMv(index):
                     board[index[0] - 1 +y][index[1] - 1 + x] == 'x '
                 elif board[index[0] - 1 + y][index[1] - 1 + x].team != board[index[0]][index[1]].team:
                     board[index[0] - 1 + y][index[1] - 1 + x].killable = True
-        return board
+    return board
 
 def rookMv(index):
     cross = [[[index[0] + i, index[1]] for i in range(1, 8 -index[0])], 
                 [[index[0] - i, index[1]] for i in range(1, index[0] + 1)],
                 [[index[0], index[1] + i] for i in range(1, 8 - index[1])],
-                [[index[0], index[1] - i] for i in range(1, index[10 + 1])]]
+                [[index[0], index[1] - i] for i in range(1, index[1] + 1)]]
     for direction in cross:
         for positions in direction:
             if on_board(positions):
@@ -241,7 +249,7 @@ def bishopMv(index):
                  [[index[0] - i, index[1] + i] for i in range(1,8)], 
                  [[index[0] - i, index[1] - i] for i in range(1, 8)]]
     for direction in diagonals:
-        for positions in diagonals:
+        for positions in direction:
             if on_board(positions):
                 if board[positions[0]][positions[1]] == '  ':
                     board[positions[0]][positions[1]] = 'x '
@@ -255,16 +263,16 @@ def queenMv(index):
     board = bishopMv(index)
     return board
 def knightMv(index):
-    for i in range(1, 8):
+    for i in range(-2, 3):
         for j in range(-2, 3):
             if i ** 2 + j ** 2 == 5:
-                if on_board((index[0] + i), index[1] + j):
+                if on_board(index[0] + i, index[1] + j):
                     if board[index[0] + i][index[1] + j] == '  ':
                         board [index[0] + i][index[1] + j] = 'x '
-                    elif board[index[0] + i][index[1] + j].team != board[index[0]][index[1]]:
+                    elif board[index[0] + i][index[1] + j].team != board[index[0]][index[1]].team:
                         board[index[0] + i][index[1] + j].killable = True
     return board
-width = 800
+
 
 win = pygame.display.set_mode((width, width))
 
@@ -323,13 +331,13 @@ def updateDisplay(win, grid, rows, width):
 def findNode(pos, width):
     interval = width / 8
     y, x = pos 
-    rows = y // interval // interval
-    columns = x
+    rows = y // interval
+    columns = x  // interval
     return int(rows), int(columns)
 def potentialMv(positions, grid):
     for i in positions:
         x, y = i
-        grid[x][y].colour = blue
+        grid[x][y].color = blue
 
 def move(originalPos, finalPosition, win):
     start[finalPosition] = start[originalPos]
@@ -344,6 +352,7 @@ def removeHightlight(grid):
                 grid[i][j].color = grey
     return grid
 createBoard(board )
+#FIXME - When you select a piece it returns "Can't select" (2/2)
 def main(win, width):
     moves = 0
     selected = False
@@ -363,8 +372,8 @@ def main(win, width):
                         possible = select_moves((board[x][y]), (x, y), moves)
                         for positions in possible:
                             row, col = positions
-                            grid[row][col].colorr = blue
-                        pieceToMv = x, y
+                            grid[row][col].color = blue
+                        pieceToMove = x, y
                         selected = True
                     except:
                         pieceToMove = []
@@ -401,7 +410,7 @@ def main(win, width):
                             selected = False
                             print("Invalid Move")
                     selected = False
-                updateDisplay(win, grid, 8, width)
+            updateDisplay(win, grid, 8, width)
 
 main(win, width)
 
