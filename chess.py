@@ -154,7 +154,7 @@ def highlight(board):
 
 def check_team(moves, index):
     row, col = index
-    if moves%2 == 0:
+    if moves % 2 == 0:
         if board[row][col].team == 'w':
             return True
     else:
@@ -364,12 +364,13 @@ def main(win, width):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            #BUG - Part of the piece select issue
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 y, x = findNode(pos, width)
                 if selected == False:
                     try:
-                        possible = select_moves((board[x][y]), (x, y), moves)
+                        possible = select_moves((board[y][x]), (x, y), moves)
                         for positions in possible:
                             row, col = positions
                             grid[row][col].color = blue
